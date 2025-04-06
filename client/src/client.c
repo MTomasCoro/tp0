@@ -48,6 +48,17 @@ int main(void)
 
 	// Enviamos al servidor el valor de CLAVE como mensaje
 
+	int resultado;
+
+	send(conexion, valor, sizeof(char), 0);
+	recv(conexion, &resultado, sizeof(int), MSG_WAITALL);
+
+	if(resultado == 0){
+		printf("Se establecio la conexion correctamente");
+	}else{
+		printf("Error al establecer la conexion con el servidor");
+	}
+
 	// Armamos y enviamos el paquete
 	paquete(conexion);
 
@@ -107,13 +118,24 @@ void paquete(int conexion)
 {
 	// Ahora toca lo divertido!
 	char* leido;
-	t_paquete* paquete;
+	t_paquete* paquete = crear_paquete();
 
 	// Leemos y esta vez agregamos las lineas al paquete
 
+	while (strcmp(leido = readline("> "), "")){
+
+	}
+
+	int* tamanio = malloc(strlen(leido) + 1);
+
+	agregar_a_paquete(paquete, leido, *tamanio);
+
+	enviar_paquete(paquete, conexion);
 
 	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
-	
+	eliminar_paquete(paquete);
+	free(leido);
+	free(tamanio);
 }
 
 void terminar_programa(int conexion, t_log* logger, t_config* config)
@@ -128,4 +150,6 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 	if(config != NULL){
 		config_destroy(config);
 	}
+
+	liberar_conexion(conexion);
 }
