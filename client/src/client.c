@@ -50,7 +50,7 @@ int main(void)
 
 	int resultado;
 
-	send(conexion, valor, sizeof(char), 0);
+	send(conexion, valor, strlen(valor) + 1, 0);
 	recv(conexion, &resultado, sizeof(int), MSG_WAITALL);
 
 	if(resultado == 0){
@@ -123,19 +123,15 @@ void paquete(int conexion)
 	// Leemos y esta vez agregamos las lineas al paquete
 
 	while (strcmp(leido = readline("> "), "")){
-
+		agregar_a_paquete(paquete, leido, strlen(leido) + 1);
+		free(leido);
 	}
-
-	int* tamanio = malloc(strlen(leido) + 1);
-
-	agregar_a_paquete(paquete, leido, *tamanio);
 
 	enviar_paquete(paquete, conexion);
 
 	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
 	eliminar_paquete(paquete);
 	free(leido);
-	free(tamanio);
 }
 
 void terminar_programa(int conexion, t_log* logger, t_config* config)
